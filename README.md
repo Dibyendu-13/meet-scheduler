@@ -22,8 +22,8 @@ To run this project, ensure you have the following:
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-repo/google-meet-nextjs.git
-   cd google-meet-nextjs
+   git clone https://github.com/Dibyendu-13/meet-scheduler.git
+   cd meet-scheduler
    ```
 2. Install dependencies:
    ```sh
