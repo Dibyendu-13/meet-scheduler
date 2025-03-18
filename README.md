@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Google Meet API with Next.js
 
-## Getting Started
+This project integrates Google Meet with Next.js, allowing users to create instant meetings and schedule meetings using Google Calendar API. Authentication is handled via NextAuth.js with Google as the provider.
 
-First, run the development server:
+## Features
 
-```bash
+- Google authentication using NextAuth.js
+- Instant meeting creation with Google Meet
+- Scheduled meeting creation using Google Calendar API
+- User-friendly interface built with Next.js
+
+## Prerequisites
+
+To run this project, ensure you have the following:
+
+- **Google Cloud Project** with Google Calendar API enabled
+- **OAuth 2.0 Credentials** (Client ID and Client Secret)
+- **Google Calendar ID** (usually your Google email)
+- **Next.js** installed in your development environment
+
+## Installation
+
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/your-repo/google-meet-nextjs.git
+   cd google-meet-nextjs
+   ```
+2. Install dependencies:
+   ```sh
+   npm install
+   ```
+3. Create a `.env.local` file and add the following variables:
+   ```env
+   GOOGLE_CLIENT_ID=your_google_client_id
+   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   NEXTAUTH_SECRET=your_nextauth_secret
+   GOOGLE_CALENDAR_ID=your_google_calendar_id
+   ```
+
+## Running the Project
+
+Start the Next.js development server:
+```sh
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Authentication
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+This project uses NextAuth.js for authentication. Users must sign in with Google to create or schedule meetings.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## API Endpoints
 
-## Learn More
+### 1. Create an Instant Meeting
+- **Endpoint:** `POST /api/instant-meeting`
+- **Request Body:**
+  ```json
+  {
+    "userEmail": "user@example.com"
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "message": "Instant meeting created!",
+    "eventLink": "https://calendar.google.com/event?eid=XYZ",
+    "meetLink": "https://meet.google.com/xyz-abc"
+  }
+  ```
 
-To learn more about Next.js, take a look at the following resources:
+### 2. Schedule a Meeting
+- **Endpoint:** `POST /api/schedule-meeting`
+- **Request Body:**
+  ```json
+  {
+    "dateTime": "2024-03-20T15:30:00.000Z",
+    "attendeesEmails": ["user@example.com"]
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "message": "Scheduled meeting created!",
+    "eventLink": "https://calendar.google.com/event?eid=XYZ",
+    "meetLink": "https://meet.google.com/xyz-abc"
+  }
+  ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. List Upcoming Meetings
+- **Endpoint:** `GET /api/list-meetings`
+- **Response:**
+  ```json
+  {
+    "events": [
+      {
+        "summary": "Team Standup",
+        "start": "2024-03-21T10:00:00Z",
+        "end": "2024-03-21T10:30:00Z",
+        "meetLink": "https://meet.google.com/xyz-abc"
+      }
+    ]
+  }
+  ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
+To deploy the project, use Vercel or any Next.js-compatible hosting provider.
+```sh
+vercel deploy
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the MIT License.
