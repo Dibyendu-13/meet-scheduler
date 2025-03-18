@@ -1,139 +1,260 @@
-/* Global container */
-.container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+.main-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  background-size: cover;
+  background-position: center;
+  padding: 20px;
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+  margin: 0;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.meeting-card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+h1 {
+  font-size: 28px;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 22px;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.btn {
+  display: inline-block;
+  width: auto;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+}
+
+.primary-btn:hover {
+  background: linear-gradient(135deg, #0056b3, #003c80);
+  transform: scale(1.05);
+}
+
+.success-btn {
+  margin-top: 20px;
+  background: linear-gradient(135deg, #28a745, #1e7e34);
+  color: white;
+}
+
+.success-btn:hover {
+  background: linear-gradient(135deg, #1e7e34, #155d25);
+  transform: scale(1.05);
+}
+
+.input-field {
+  width: 80%;
+  padding: 16px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  margin-top: 12px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.input-field:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background-color: #eee;
+  margin: 30px 0;
+}
+
+.input-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.link {
+  display: inline-block;
+  margin-top: 20px;
+  color: #007bff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.link,
+.btn {
+  transition: transform 0.3s ease;
+}
+
+.link:hover {
+  transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.meeting-card {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.instant-meeting,
+.scheduled-meeting {
+  width: 100%;
+  padding: 10px 0;
+}
+
+.instant-meeting > h2,
+.scheduled-meeting > h2 {
+  margin-bottom: 15px;
+}
+
+.instant-meeting,
+.scheduled-meeting {
+  margin-bottom: 40px;
+}
+
+@media (max-width: 480px) {
+  .meeting-card {
     padding: 20px;
+    max-width: 100%;
   }
-  
-  /* Card styling */
-  .card {
-    background: white;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    text-align: center;
-    width: 400px;
-    animation: fadeIn 0.5s ease-in-out;
-  }
-  
-  /* Headings */
+
   h1 {
-    font-size: 22px;
-    margin-bottom: 12px;
-    color: #333;
-    font-weight: bold;
+    font-size: 24px;
   }
-  
-  /* Smaller Buttons */
+
+  h2 {
+    font-size: 18px;
+  }
+
   .btn {
-    display: block;
-    width: 45%;  /* Smaller width */
-    padding: 8px 12px;  /* Smaller padding */
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;  /* Smaller font size */
-    font-weight: bold;
-    margin: 12px auto;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
+    padding: 8px 16px;
+    font-size: 12px;
   }
-  
-  .btn-primary {
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    color: white;
-  }
-  
-  .btn-primary:hover {
-    background: linear-gradient(135deg, #0056b3, #003c80);
-    transform: scale(1.05);
-  }
-  
-  .btn-danger {
-    background: linear-gradient(135deg, #dc3545, #a71d2a);
-    color: white;
-  }
-  
-  .btn-danger:hover {
-    background: linear-gradient(135deg, #a71d2a, #7f131d);
-    transform: scale(1.05);
-  }
-  
-  .btn-success {
-    background: linear-gradient(135deg, #28a745, #1e7e34);
-    color: white;
-  }
-  
-  .btn-success:hover {
-    background: linear-gradient(135deg, #1e7e34, #155d25);
-    transform: scale(1.05);
-  }
-  
-  /* Input field */
-  .input {
-    width: 80%;
-    padding: 10px;
-    margin-top: 6px;
-    border: 2px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: all 0.3s ease-in-out;
-  }
-  
-  .input:focus {
-    border-color: #007bff;
-    outline: none;
-    box-shadow: 0 0 6px rgba(0, 123, 255, 0.4);
-  }
-  
-  /* Meeting links */
-  .meeting-link {
-    display: inline-block;
-    margin-top: 12px;
-    padding: 8px 12px;
-    color: white;
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    text-decoration: none;
-    font-weight: bold;
-    border-radius: 6px;
-    transition: all 0.3s ease-in-out;
+
+  .input-field {
     font-size: 14px;
   }
-  
-  .meeting-link:hover {
-    background: linear-gradient(135deg, #0056b3, #003c80);
-    transform: scale(1.05);
-    text-decoration: none;
+
+  .input-label {
+    font-size: 14px;
   }
-  
-  /* Divider */
-  hr {
+
+  .divider {
     margin: 20px 0;
-    border: 0;
-    height: 1px;
-    background: rgba(0, 0, 0, 0.2);
   }
-  
-  /* Label */
-  .label {
-    display: block;
-    font-weight: bold;
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .meeting-card {
+    max-width: 90%;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  .btn {
+    padding: 9px 18px;
     font-size: 13px;
-    margin-top: 12px;
-    color: #555;
   }
-  
-  /* Fade-in animation */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-15px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+
+  .input-field {
+    font-size: 15px;
   }
-  
+
+  .input-label {
+    font-size: 15px;
+  }
+
+  .divider {
+    margin: 25px 0;
+  }
+}
+
+@media (min-width: 769px) {
+  .meeting-card {
+    max-width: 600px;
+    padding: 40px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .input-field {
+    font-size: 16px;
+  }
+
+  .input-label {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 380px) {
+  .join-meeting-link {
+    margin-left: 30px;
+  }
+}
