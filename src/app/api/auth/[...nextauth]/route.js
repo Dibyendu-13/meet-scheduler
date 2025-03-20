@@ -11,7 +11,7 @@ export const authOptions = {
                     scope: "openid email profile https://www.googleapis.com/auth/calendar.events",
                     prompt: "consent",
                     access_type: "offline",
-                    response_type: "code", // Ensures we get id_token
+                    response_type: "code", // Explicitly request id_token
                 },
             },
         }),
@@ -19,9 +19,9 @@ export const authOptions = {
     callbacks: {
         async jwt({ token, account }) {
             if (account) {
-                token.accessToken = account.access_token;
-                token.refreshToken = account.refresh_token;
-                token.idToken = account.id_token; // Store id_token
+                token.accessToken = account.access_token || null;
+                token.refreshToken = account.refresh_token || null;
+                token.idToken = account.id_token || null; // Ensure id_token is stored safely
             }
             return token;
         },
@@ -35,6 +35,6 @@ export const authOptions = {
     secret: process.env.NEXTAUTH_SECRET,
 };
 
-// ✅ Ensure NextAuth uses named exports for Next.js App Router
-const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
+// ✅ Properly export GET and POST for App Router
+export const GET = async (req) => NextAuth(authOptions)(req);
+export const POST = async (req) => NextAuth(authOptions)(req);
