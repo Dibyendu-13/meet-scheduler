@@ -1,6 +1,6 @@
 import { google } from "googleapis";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route"; // Ensure this exists
+import { authOptions } from "../auth/[...nextauth]/route";
 import { v4 as uuidv4 } from "uuid";
 
 export async function POST(req) {
@@ -24,16 +24,17 @@ export async function POST(req) {
         // Google Calendar API
         const calendar = google.calendar({ version: "v3", auth: oauth2Client });
 
-        // Convert time to IST (India Standard Time)
-        const startTimeUTC = new Date(dateTime);
-        const startTimeIST = new Date(startTimeUTC.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
-        const endTimeIST = new Date(startTimeIST.getTime() + 30 * 60000); // 30-minute duration
+        // ✅ Ensure `dateTime` is already in UTC before scheduling
+        const startTimeUTC = new Date(dateTime); // Assume frontend sends UTC
+        const endTimeUTC = new Date(startTimeUTC.getTime() + 30 * 60000); // 30-minute duration
 
-        // Create Google Meet Event
+        console.log("📌 Scheduled Meeting Time (UTC):", startTimeUTC.toISOString(), "-", endTimeUTC.toISOString());
+
+        // ✅ Schedule in UTC (Google Calendar auto-converts to local time for each user)
         const event = {
             summary: "Scheduled Google Meet Meeting",
-            start: { dateTime: startTimeIST.toISOString(), timeZone: "Asia/Kolkata" },
-            end: { dateTime: endTimeIST.toISOString(), timeZone: "Asia/Kolkata" },
+            start: { dateTime: startTimeUTC.toISOString(), timeZone: "UTC" },
+            end: { dateTime: endTimeUTC.toISOString(), timeZone: "UTC" },
             attendees: attendeesEmails.map(email => ({ email })),
             conferenceData: {
                 createRequest: {
@@ -53,6 +54,7 @@ export async function POST(req) {
         return Response.json({
             success: true,
             message: "Meeting scheduled successfully!",
+            scheduledTimeUTC: startTimeUTC.toISOString() + " - " + endTimeUTC.toISOString(),
             eventLink: response.data.htmlLink,
             meetLink: response.data.conferenceData?.entryPoints?.[0]?.uri || "No Meet link generated",
             eventId: response.data.id,
