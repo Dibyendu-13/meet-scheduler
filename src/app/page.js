@@ -4,17 +4,16 @@ import { useState } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';  // Import Toastify CSS
-import "./Home.css"; // Import the CSS file
+import "./Home.css"; // Import CSS
 
 export default function Home() {
   const { data: session } = useSession();
-  const [meetLink, setMeetLink] = useState(null);
+  const [instantMeetLink, setInstantMeetLink] = useState(null);
   const [scheduledMeetLink, setScheduledMeetLink] = useState(null);
   const [loading, setLoading] = useState(false);
   const [scheduleLoading, setScheduleLoading] = useState(false);
   const [dateTime, setDateTime] = useState("");
 
-  
   if (!session) {
     return (
       <main className="main-container">
@@ -34,11 +33,11 @@ export default function Home() {
     const res = await fetch("/api/instant-meeting", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userEmail: session.user.email }), // Use session email
+      body: JSON.stringify({ userEmail: session.user.email }),
     });
 
     const data = await res.json();
-    setMeetLink(data.meetLink);
+    setInstantMeetLink(data.meetLink);
     setLoading(false);
 
     if (data.meetLink) {
@@ -56,21 +55,25 @@ export default function Home() {
 
   const scheduleMeeting = async () => {
     if (!dateTime) {
-      alert("Please select a date and time!");
+      toast.error("Please select a date and time!", {
+        position: "top-center",
+        autoClose: 3000,
+      });
       return;
     }
 
     setScheduleLoading(true);
+    const utcDateTime = new Date(dateTime).toISOString(); // Convert to UTC
     const res = await fetch("/api/schedule-meeting", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ dateTime, attendeesEmails: [session.user.email] }), // Use session email
+      body: JSON.stringify({ dateTime: utcDateTime, attendeesEmails: [session.user.email] }),
     });
 
     const data = await res.json();
     setScheduledMeetLink(data.meetLink);
     setScheduleLoading(false);
-   //position: "top-center",
+
     if (data.meetLink) {
       toast.success("Meeting scheduled successfully!", {
         position: "top-center",
@@ -88,7 +91,6 @@ export default function Home() {
     <main className="main-container">
       <div className="meeting-card">
         <h1>Google Meet Scheduler</h1>
-       
         <h3>Welcome, {session.user.name} 👋</h3>
         <button onClick={() => signOut()} className="btn btn-danger">Sign Out</button>
 
@@ -102,9 +104,9 @@ export default function Home() {
           >
             {loading ? "Creating..." : "Create Instant Meeting"}
           </button>
-          {meetLink && (
+          {instantMeetLink && (
             <p>
-              <a href={meetLink} target="_blank" rel="noopener noreferrer" className="link">
+              <a href={instantMeetLink} target="_blank" rel="noopener noreferrer" className="link">
                 Join Instant Meeting
               </a>
             </p>
@@ -142,7 +144,7 @@ export default function Home() {
         </section>
       </div>
 
-      {/* Toast Container for displaying notifications */}
+      {/* Toast Container for Notifications */}
       <ToastContainer />
     </main>
   );

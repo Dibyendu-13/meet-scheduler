@@ -1,45 +1,64 @@
-import { calendar, GOOGLE_CALENDAR_ID } from "../../utils/googleCalendar";
+import { google } from "googleapis";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route"; // Ensure this exists
 import { v4 as uuidv4 } from "uuid";
 
 export async function POST(req) {
-  try {
-    const { dateTime, attendeesEmails } = await req.json();
+    try {
+        const session = await getServerSession(authOptions);
 
-    if (!dateTime || !attendeesEmails || !Array.isArray(attendeesEmails) || attendeesEmails.length === 0) {
-      return Response.json({ error: "Invalid input. Provide dateTime and at least one attendee email." }, { status: 400 });
+        if (!session || !session.accessToken) {
+            return Response.json({ error: "Unauthorized. Please log in first." }, { status: 401 });
+        }
+
+        const { dateTime, attendeesEmails } = await req.json();
+
+        if (!dateTime || !Array.isArray(attendeesEmails) || attendeesEmails.length === 0) {
+            return Response.json({ error: "Invalid input. Provide dateTime and at least one attendee email." }, { status: 400 });
+        }
+
+        // Initialize OAuth Client
+        const oauth2Client = new google.auth.OAuth2();
+        oauth2Client.setCredentials({ access_token: session.accessToken });
+
+        // Google Calendar API
+        const calendar = google.calendar({ version: "v3", auth: oauth2Client });
+
+        // Convert time to IST (India Standard Time)
+        const startTimeUTC = new Date(dateTime);
+        const startTimeIST = new Date(startTimeUTC.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+        const endTimeIST = new Date(startTimeIST.getTime() + 30 * 60000); // 30-minute duration
+
+        // Create Google Meet Event
+        const event = {
+            summary: "Scheduled Google Meet Meeting",
+            start: { dateTime: startTimeIST.toISOString(), timeZone: "Asia/Kolkata" },
+            end: { dateTime: endTimeIST.toISOString(), timeZone: "Asia/Kolkata" },
+            attendees: attendeesEmails.map(email => ({ email })),
+            conferenceData: {
+                createRequest: {
+                    requestId: uuidv4(),
+                    conferenceSolutionKey: { type: "hangoutsMeet" },
+                },
+            },
+        };
+
+        // Insert event into the user's Google Calendar
+        const response = await calendar.events.insert({
+            calendarId: "primary",
+            resource: event,
+            conferenceDataVersion: 1,
+        });
+
+        return Response.json({
+            success: true,
+            message: "Meeting scheduled successfully!",
+            eventLink: response.data.htmlLink,
+            meetLink: response.data.conferenceData?.entryPoints?.[0]?.uri || "No Meet link generated",
+            eventId: response.data.id,
+        });
+    } catch (error) {
+        console.error("❌ Error scheduling meeting:", error);
+        return Response.json({ success: false, error: error.message || "An unexpected error occurred" }, { status: 500 });
     }
-
-    const startTime = new Date(dateTime);
-    if (isNaN(startTime)) {
-      return Response.json({ error: "Invalid dateTime format. Use ISO 8601 (YYYY-MM-DDTHH:MM:SSZ)." }, { status: 400 });
-    }
-
-    const event = {
-      summary: "Scheduled Google Meet Meeting",
-      start: { dateTime: startTime.toISOString(), timeZone: "Asia/Kolkata" },
-      end: { dateTime: new Date(startTime.getTime() + 30 * 60000).toISOString(), timeZone: "Asia/Kolkata" },
-      attendees: attendeesEmails.map(email => ({ email })),
-      conferenceData: {
-        createRequest: {
-          requestId: uuidv4(),
-          conferenceSolutionKey: { type: "hangoutsMeet" },
-        },
-      },
-    };
-
-    const response = await calendar.events.insert({
-      calendarId: GOOGLE_CALENDAR_ID,
-      resource: event,
-      conferenceDataVersion: 1,
-    });
-
-    return Response.json({
-      message: "Meeting scheduled!",
-      eventLink: response.data.htmlLink,
-      meetLink: response.data.conferenceData?.entryPoints?.[0]?.uri || "No Meet link generated",
-    });
-  } catch (error) {
-    console.error("❌ Error scheduling meeting:", error.message);
-    return Response.json({ error: error.message }, { status: 500 });
-  }
 }
